@@ -1,0 +1,119 @@
+# Default values for chart-updater.
+# This is partially based on Flux chart values.
+
+replicaCount: 1
+
+image:
+  repository: rossumai/chart-updater
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+git:
+  # URL of git repo with Kubernetes manifests; e.g. git.url=ssh://git@github.com/name/config
+  url: ""
+  # Branch of git repo to use for Kubernetes manifests
+  branch: "master"
+  # Path within git repo to locate Kubernetes manifests (relative path)
+  path: ""
+  # Username to use as git committer
+  user: "Chart Sync"
+  # Email to use as git committer
+  email: "chart-sync@rossum.ai"
+  # Period at which to poll git repo for new commits (seconds)
+  pollInterval: "60"
+  # The secret name can be used to supply your own SSH key:
+  # 1. Generate a SSH key named identity: ssh-keygen -q -N "" -f ./identity
+  # 2. Create a Kubernetes secret: kubectl -n flux create secret generic chart-updater-ssh --from-file=./identity
+  # 3. Delete the private key: rm ./identity
+  # 4. Add ./identity.pub as a deployment key with write access in your Git repo
+  # 5. Set the secret name (chart-updater-ssh) below
+  secretName: ""
+  # Timeout for git operations
+  timeout: "30"
+
+ssh:
+  # When git over SSH is used, it is necessary to fill knownHosts first to
+  # prevent man-in-the-middle attack. Obtain the key using `ssh-keyscan`
+  knownHosts: |
+    github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+
+# The contents of the secret will be defined as environment variables
+# in the Chart-updater container. Once defined, you can use the variables in your
+# `git.url`: `https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/name/config.git`
+env:
+  secretName: ""
+
+helm:
+  # URL of Helm repository to watch, e.g. https://charts.rossum.ai/charts
+  url: ""
+  # Basic authentication user
+  username:
+  # Basic authentication password
+  password:
+
+# Prefix used in helmrelease annotations related to chart-updater
+annotationPrefix: "rossum.ai"
+
+# Additional environment variables to set
+extraEnvs: []
+# extraEnvs:
+#   - name: FOO
+#     value: bar
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 3030
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

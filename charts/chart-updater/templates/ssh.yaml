@@ -1,0 +1,17 @@
+{{- if .Values.ssh.knownHosts -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "chart-updater.fullname" . }}-ssh-config
+data:
+  knownHosts: |
+    {{- if .Values.ssh.knownHosts }}
+      {{- if contains "\n" .Values.ssh.knownHosts }}
+        {{- range $value := .Values.ssh.knownHosts | splitList "\n" }}
+          {{ print $value }}
+        {{- end }}
+      {{- else }}
+        {{ .Values.ssh.knownHosts }}
+      {{- end }}
+    {{- end }}
+{{- end -}}
