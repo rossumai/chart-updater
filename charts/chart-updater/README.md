@@ -21,7 +21,7 @@ a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) p
 First, instal Flux and Helm Operator, see [Get started with Flux using
 Helm](https://docs.fluxcd.io/en/stable/tutorials/get-started-helm.html) tutorial.
 
-### Installing Flux using Helm
+### Installing Flux
 
 First, you need Flux and Helm-operator running in the cluster, see [Flux Get Started
 tutorial](https://docs.fluxcd.io/en/stable/tutorials/get-started-helm.html).
@@ -33,7 +33,7 @@ The [configuration](#configuration) section lists all the parameters that can be
 Add the Rossum.ai repo:
 
 ```sh
-helm repo add rossumai https://github.io/rossumai/helm-charts
+helm repo add rossumai https://rossumai.github.io/helm-charts
 ```
 
 #### Install the chart (SSH access to Git config repo)
@@ -141,10 +141,10 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```sh
 helm upgrade -i chart-updater \
---set git.url=git@github.com:stefanprodan/k8s-podinfo \
+--set git.url=git@github.com/fluxcd/flux-get-started' \
 --set git.path="auto-deploy" \
 --namespace flux \
-rossuai/chart-updater
+rossumai/chart-updater
 ```
 
 ### Upgrade

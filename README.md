@@ -24,6 +24,7 @@ updated atomically in a single commit.
 The tool is available as a Helm chart, ready to be deployed into your Kubernetes cluster.
 
 ```
+helm repo add rossumai https://rossumai.github.io/helm-charts
 helm install chart-updater rossumai/chart-updater
 ```
 
