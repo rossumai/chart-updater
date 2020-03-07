@@ -55,6 +55,9 @@ class Updater:
                 updated = True
         if updated:
             self.git.push_to_branch()
+            log.info("Update finished")
+        else:
+            log.info("No updates detected")
 
     def _ensure_git_repo_cloned(self):
         if self._cloned:
