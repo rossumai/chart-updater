@@ -28,7 +28,8 @@ helm repo add rossumai https://rossumai.github.io/helm-charts
 helm install chart-updater rossumai/chart-updater
 ```
 
-See [charts/chart-updater](https://github.com/rossumai/chart-updater/charts/chart-updater#Configuration) for a complete list of available configuration options.
+See [charts/chart-updater](https://github.com/rossumai/chart-updater/tree/master/charts/chart-updater#configuration)
+for a complete list of available configuration options.
 
 ### Auto-update annotations
 
