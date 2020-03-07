@@ -39,7 +39,7 @@ helm repo add rossumai https://rossumai.github.io/helm-charts
 #### Install the chart (SSH access to Git config repo)
 
 1. Generate a SSH key: `ssh-keygen -q -N "" -f ./identity`
-1. Create a Kubernetes secret: `kubectl -n flux create secret generic chart-updater-ssh --from-file=./identity`
+1. Create a Kubernetes secret: `kubectl -n flux create secret generic chart-updater-ssh --from-file=identity=./identity`
 1. Add `identity.pub` as a deployment key with write access in your Git config repo
 1. Obtain Git repo host key: `ssh-keyscan <your_git_host_domain>`, e.g. for github.com:
   ```sh

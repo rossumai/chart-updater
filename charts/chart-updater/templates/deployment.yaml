@@ -51,7 +51,7 @@ spec:
           {{- end }}
           {{- if .Values.git.secretName }}
           - name: git-ssh-identity
-            mountPath: /git-ssh-identity
+            mountPath: /root/ssh_keys
             readOnly: true
           {{- end }}
           env:
@@ -71,7 +71,7 @@ spec:
           - --git-email={{ .Values.git.email }}
           - --git-timeout={{ .Values.git.timeout }}
           {{- if .Values.git.secretName }}
-          - --git-ssh-identity=/git-ssh-identity
+          - --git-ssh-identity=/root/ssh_keys/identity
           {{- end }}
           - --helm-repo-url={{ .Values.helm.url }}
           - --helm-repo-username={{ .Values.helm.username }}
