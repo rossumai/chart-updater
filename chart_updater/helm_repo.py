@@ -4,8 +4,8 @@ from typing import Optional, Tuple
 
 import requests
 import semantic_version
+import yaml
 from requests import RequestException
-from ruamel.yaml import YAML
 
 from chart_updater import UpdateException
 
@@ -29,14 +29,14 @@ class HelmRepo:
         chart = self._get_latest_chart(chart_name, chart_version_pattern)
         return chart.get("version"), chart.get("appVersion")
 
-    def _load_chart_repo_index(self):
+    def _load_chart_repo_index(self) -> dict:
         try:
             if self.helm_repo_username and self.helm_repo_password:
                 auth = {"auth": (self.helm_repo_username, self.helm_repo_password)}
             else:
                 auth = {}
             response = requests.get(f"{self.helm_repo_url}/index.yaml", **auth)
-            return YAML().load(response.content)
+            return yaml.safe_load(response.content)
         except RequestException as e:
             raise UpdateException(f"Cannot download chart list: {str(e)}")
 

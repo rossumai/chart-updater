@@ -1,6 +1,8 @@
 import logging
 from typing import Optional
 
+# We use ruamel library for YAML manipulation because it preserves format, comments, etc.
+# But it is slower than PyYAML for large documents.
 from ruamel.yaml import YAML
 
 from . import UpdateException
