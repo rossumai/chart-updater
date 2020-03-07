@@ -45,8 +45,13 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
           {{- if .Values.ssh.knownHosts }}
-          - name: sshdir
+          - name: ssh-dir
             mountPath: /root/.ssh
+            readOnly: true
+          {{- end }}
+          {{- if .Values.git.secretName }}
+          - name: git-ssh-identity
+            mountPath: /git-ssh-identity
             readOnly: true
           {{- end }}
           env:
@@ -58,14 +63,35 @@ spec:
           - secretRef:
               name: {{ .Values.env.secretName }}
           {{- end }}
-      {{- with .Values.nodeSelector }}
+          args:
+          - --git-url={{ .Values.git.url }}
+          - --git-branch={{ .Values.git.branch }}
+          - --git-path={{ .Values.git.path }}
+          - --git-user={{ .Values.git.user }}
+          - --git-email={{ .Values.git.email }}
+          - --git-timeout={{ .Values.git.timeout }}
+          {{- if .Values.git.secretName }}
+          - --git-ssh-identity=/git-ssh-identity
+          {{- end }}
+          - --helm-repo-url={{ .Values.helm.url }}
+          - --helm-repo-username={{ .Values.helm.username }}
+          - --helm-repo-password={{ .Values.helm.password }}
+          - --sync-interval={{ .Values.git.pollInterval }}
+          - --annotation-prefix={{ .Values.annotationPrefix }}
       volumes:
       {{- if .Values.ssh.knownHosts }}
-      - name: sshdir
+      - name: ssh-dir
         configMap:
           name: {{ template "chart-updater.fullname" . }}-ssh-config
           defaultMode: 0600
       {{- end }}
+      {{- if .Values.git.secretName }}
+      - name: git-ssh-identity
+        secret:
+          secretName: {{ .Values.git.secretName }}
+          defaultMode: 0400
+      {{- end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
