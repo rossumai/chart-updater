@@ -14,11 +14,11 @@ class LatestChart:
     def __init__(
         self,
         helm_repo_url: str,
-        helm_repo_user: Optional[str] = None,
+        helm_repo_username: Optional[str] = None,
         helm_repo_password: Optional[str] = None,
     ):
         self.helm_repo_url = helm_repo_url
-        self.helm_repo_user = helm_repo_user
+        self.helm_repo_username = helm_repo_username
         self.helm_repo_password = helm_repo_password
         self._chart = {}
 
@@ -32,8 +32,8 @@ class LatestChart:
 
     def _load_chart_repo_index(self):
         try:
-            if self.helm_repo_user and self.helm_repo_password:
-                auth = {"auth": (self.helm_repo_user, self.helm_repo_password)}
+            if self.helm_repo_username and self.helm_repo_password:
+                auth = {"auth": (self.helm_repo_username, self.helm_repo_password)}
             else:
                 auth = {}
             response = requests.get(f"{self.helm_repo_url}/index.yaml", **auth)

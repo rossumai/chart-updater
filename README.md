@@ -121,7 +121,7 @@ Options:
   --git-timeout INTEGER      Git operations timeout (seconds).  [default: 30]
   --git-ssh-identity TEXT    Git config SSH identity file (key).
   --helm-repo-url TEXT       Helm repo URL.  [required]
-  --helm-repo-user TEXT      Helm repo user (basic auth).
+  --helm-repo-username TEXT  Helm repo username (basic auth).
   --helm-repo-password TEXT  Helm repo password (basic auth).
   --sync-interval INTEGER    Period of git sync (seconds).  [default: 60]
   --annotation-prefix TEXT   Prefix of k8s annotations.  [default: rossum.ai]
