@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ template "chart-updater.fullname" . }}-ssh-config
 data:
-  knownHosts: |
+  known_hosts: |
     {{- if .Values.ssh.knownHosts }}
       {{- if contains "\n" .Values.ssh.knownHosts }}
         {{- range $value := .Values.ssh.knownHosts | splitList "\n" }}
