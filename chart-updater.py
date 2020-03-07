@@ -17,7 +17,7 @@ app = Flask(__name__)
 event = threading.Event()
 
 
-@app.route("/v1/sync-git", methods=["POST"])
+@app.route("/api/v1/sync-git", methods=["POST"])
 def refresh():
     event.set()
     log.info("Sync-git triggered")
