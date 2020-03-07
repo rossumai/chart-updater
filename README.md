@@ -113,18 +113,16 @@ Run `./chart-updater.py --help` to obtain list of available options:
 Usage: chart-updater.py [OPTIONS]
 
 Options:
-  --git-url TEXT             Git config repo URL.  [required]
-  --git-path TEXT            Git config path.  [default: .]
-  --git-branch TEXT          Git config repo ref.  [default: master]
-  --git-user TEXT            Git commit author's name.  [default: Chart Sync]
-  --git-email TEXT           Git commit author's email.  [default: chart-
-                             sync@rossum.ai]
-  --git-timeout INTEGER      Git operations timeout (seconds).  [default: 30]
-  --git-ssh-identity TEXT    Git config SSH identity file (key).
-  --helm-repo-url TEXT       Helm repo URL.  [required]
-  --helm-repo-username TEXT  Helm repo username (basic auth).
-  --helm-repo-password TEXT  Helm repo password (basic auth).
-  --sync-interval INTEGER    Period of git sync (seconds).  [default: 60]
-  --annotation-prefix TEXT   Prefix of k8s annotations.  [default: rossum.ai]
-  --help                     Show this message and exit.
+  --git-url TEXT            Git config repo URL.  [required]
+  --git-branch TEXT         Git config repo ref.  [default: master]
+  --git-path TEXT           Git config path.  [default: .]
+  --git-user TEXT           Git commit author's name.  [default: Chart Sync]
+  --git-email TEXT          Git commit author's email.  [default: chart-
+                            sync@rossum.ai]
+  --git-timeout INTEGER     Git operations timeout (seconds).  [default: 30]
+  --git-ssh-identity TEXT   Git config SSH identity file (key).
+  --helm-repo-url TEXT      Helm repo URL.  [required]
+  --sync-interval INTEGER   Period of git sync (seconds).  [default: 60]
+  --annotation-prefix TEXT  Prefix of k8s annotations.  [default: rossum.ai]
+  --help                    Show this message and exit.
 ```

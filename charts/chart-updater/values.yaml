@@ -42,18 +42,14 @@ ssh:
     github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 
 # The contents of the secret will be defined as environment variables
-# in the Chart-updater container. Once defined, you can use the variables in your
+# in the chart-updater container. Once defined, you can use the variables like this:
 # `git.url`: `https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/name/config.git`
 env:
   secretName: ""
 
 helm:
-  # URL of Helm repository to watch, e.g. https://charts.rossum.ai/charts
+  # URL of a Helm repository to watch, e.g. https://rossumai.github.io/helm-charts
   url: ""
-  # Basic authentication user
-  username:
-  # Basic authentication password
-  password:
 
 # Prefix used in helmrelease annotations related to chart-updater
 annotationPrefix: "rossum.ai"

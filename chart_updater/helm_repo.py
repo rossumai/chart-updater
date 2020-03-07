@@ -11,15 +11,8 @@ from chart_updater import UpdateException
 
 
 class HelmRepo:
-    def __init__(
-        self,
-        helm_repo_url: str,
-        helm_repo_username: Optional[str] = None,
-        helm_repo_password: Optional[str] = None,
-    ):
+    def __init__(self, helm_repo_url: str):
         self.helm_repo_url = helm_repo_url
-        self.helm_repo_username = helm_repo_username
-        self.helm_repo_password = helm_repo_password
         self._index = None
 
     def update(self):
@@ -31,14 +24,10 @@ class HelmRepo:
 
     def _load_chart_repo_index(self) -> dict:
         try:
-            if self.helm_repo_username and self.helm_repo_password:
-                auth = {"auth": (self.helm_repo_username, self.helm_repo_password)}
-            else:
-                auth = {}
-            response = requests.get(f"{self.helm_repo_url}/index.yaml", **auth)
-            return yaml.safe_load(response.content)
+            response = requests.get(f"{self.helm_repo_url}/index.yaml")
         except RequestException as e:
             raise UpdateException(f"Cannot download chart list: {str(e)}")
+        return yaml.safe_load(response.content)
 
     def _get_latest_chart(self, chart_name: str, chart_version_pattern: str) -> dict:
         try:

@@ -38,22 +38,24 @@ helm repo add rossumai https://rossumai.github.io/helm-charts
 
 #### Install the chart (SSH access to Git config repo)
 
+Note: You may also reuse Flux SSH key: skip steps 1 - 3 and set `git.secretName` to the Flux SSH key secret name.
+
 1. Generate a SSH key: `ssh-keygen -q -N "" -f ./identity`
-1. Create a Kubernetes secret: `kubectl -n flux create secret generic chart-updater-ssh --from-file=identity=./identity`
+1. Create a Kubernetes secret: `kubectl -n flux create secret generic chart-updater-ssh-key --from-file=identity=./identity`
 1. Add `identity.pub` as a deployment key with write access in your Git config repo
 1. Obtain Git repo host key: `ssh-keyscan <your_git_host_domain>`, e.g. for github.com:
   ```sh
   ssh-keyscan github.com
   github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
   ```
-1. Replace `git@github.com:fluxcd/flux-get-started` with your own Git repository and run helm to install the chart:
+1. Replace `github.com/fluxcd/flux-get-started` and `rossumai.github.io/helm-charts` with your own git/Helm chart repository and run `helm` to install the chart:
 
    ```sh
    helm upgrade -i chart-updater rossumai/chart-updater \
    --set git.url=git@github.com:fluxcd/flux-get-started \
-   --set git.seretName=chart-updater-ssh \
-   --set git.path=auto-deploy \
+   --set git.secretName=chart-updater-ssh-key \
    --set ssh.knownHosts="github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" \
+   --set helm.url=https://rossumai.github.io/helm-charts
    --namespace flux
    ```
 
@@ -74,17 +76,33 @@ config](https://kubernetes.io/docs/tasks/inject-data-application/define-environm
    to) and the `GIT_AUTHKEY` you created in the first step:
 
    ```sh
-   kubectl create secret generic chart-updater-git-auth --namespace flux --from-literal=GIT_AUTHUSER=<username> --from-literal=GIT_AUTHKEY=<token>
+   kubectl create secret generic chart-updater-auth --namespace flux --from-literal=GIT_AUTHUSER=<username> --from-literal=GIT_AUTHKEY=<token>
    ```
 
-1. Replace `github.com/fluxcd/flux-get-started` with your own git repository and run helm to install the chart:
+1. Replace `github.com/fluxcd/flux-get-started` and `rossumai.github.io/helm-charts` with your own git/Helm chart repository and run `helm` to install the chart:
 
    ```sh
    helm upgrade -i chart-updater rossumai/chart-updater \
    --set git.url='https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/fluxcd/flux-get-started' \
-   --set git.path=auto-deploy \
-   --set env.secretName=flux-git-auth \
+   --set env.secretName=chart-updater-auth \
+   --set helm.url=https://rossumai.github.io/helm-charts
    --namespace flux
+   ```
+
+#### Using Helm repository with Basic authentication
+
+If your Helm repository requires Basic authentication, use a similar trick to the HTTPS access above:
+
+1. Create secret with username and password keys:
+
+   ```sh
+   kubectl create secret generic chart-updater-auth --namespace flux --from-literal=HELM_USERNAME=<username> --from-literal=HELM_PASSWORD=<password>
+   ```
+
+1. Use it in helm install:
+   ```sh
+   --set env.secretName=chart-updater-auth \
+   --set helm.url='https://$(HELM_USERNAME):$(HELM_PASSWORD)@rossumai.github.io/helm-charts' \
    ```
 
 ### Uninstalling the Chart
@@ -134,8 +152,6 @@ This chart was inspired by the [Flux Helm chart](https://github.com/fluxcd/flux/
 | `git.secretName`                                  | `None`                                               | Kubernetes secret with the SSH private key.
 | `ssh.known_hosts`                                 | `None`                                               | The contents of an SSH `known_hosts` file, if you need to supply host key(s)
 | `helm.url`                                        | `None`                                               | URL of Helm repository to scan (e.g. https://github.io/username/charts)
-| `helm.username`                                   | `None`                                               | Basic authentication username for the Helm repository
-| `helm.password`                                   | `None`                                               | Basic authentication password for the Helm repository
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
