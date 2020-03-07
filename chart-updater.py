@@ -7,7 +7,7 @@ import click
 from flask import Flask
 from waitress import serve
 
-from chart_updater.chart import LatestChart
+from chart_updater.helm_repo import HelmRepo
 from chart_updater.git import Git
 from chart_updater.updater import Updater
 
@@ -79,7 +79,7 @@ def chart_updater(
     annotation_prefix,
 ):
     git = Git(git_url, git_branch, git_path, git_user, git_email, git_timeout, git_ssh_identity)
-    chart = LatestChart(helm_repo_url, helm_repo_username, helm_repo_password)
+    chart = HelmRepo(helm_repo_url, helm_repo_username, helm_repo_password)
     updater = Updater(git, chart, sync_interval, annotation_prefix, event=event)
     updater.start()
     serve(app, host="0.0.0.0", port=3030)

@@ -10,7 +10,7 @@ from ruamel.yaml import YAML
 from chart_updater import UpdateException
 
 
-class LatestChart:
+class HelmRepo:
     def __init__(
         self,
         helm_repo_url: str,

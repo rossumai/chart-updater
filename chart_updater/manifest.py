@@ -4,7 +4,7 @@ from typing import Optional
 from ruamel.yaml import YAML
 
 from . import UpdateException
-from .chart import LatestChart
+from .helm_repo import HelmRepo
 
 CHART_AUTO_UPDATE = "allow-chart-update"
 CHART_VERSION_PATTERN = "chart-version"
@@ -15,8 +15,8 @@ log = logging.getLogger("chart-updater")
 
 
 class Manifest:
-    def __init__(self, latest_chart: LatestChart, annotation_prefix: str = "rossum.ai"):
-        self.latest_chart = latest_chart
+    def __init__(self, helm_repo: HelmRepo, annotation_prefix: str = "rossum.ai"):
+        self.helm_repo = helm_repo
         self.annotation_prefix = annotation_prefix
         self._chart_auto_update_key = f"{annotation_prefix}/{CHART_AUTO_UPDATE}"
         self._chart_version_pattern_key = f"{annotation_prefix}/{CHART_VERSION_PATTERN}"
@@ -77,7 +77,7 @@ class Manifest:
         chart_version_pattern = self._manifest["metadata"]["annotations"][
             self._chart_version_pattern_key
         ]
-        self.latest_chart.load(self.chart_name, chart_version_pattern)
+        self.helm_repo.load(self.chart_name, chart_version_pattern)
 
     def _update_chart(self, version: str) -> None:
         self._manifest["spec"]["chart"]["version"] = version
@@ -108,8 +108,8 @@ class Manifest:
         if not self._auto_updates_enabled():
             return False
         self._load_latest_chart()
-        if self.chart_version == self.latest_chart.version:
+        if self.chart_version == self.helm_repo.version:
             return False
-        self._update_chart(self.latest_chart.version)
-        self._update_image(self.latest_chart.app_version)
+        self._update_chart(self.helm_repo.version)
+        self._update_image(self.helm_repo.app_version)
         return True

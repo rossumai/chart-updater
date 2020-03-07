@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 from unittest.mock import patch, Mock
 
 from chart_updater.git import Git
-from chart_updater.chart import LatestChart
+from chart_updater.helm_repo import HelmRepo
 from chart_updater.updater import Updater
 
 MANIFEST_PATH = "helmrelease.yaml"
@@ -252,7 +252,7 @@ HELM_REPO_INDEX = f"{HELM_REPO_URL}/index.yaml"
 def test_no_annotation(empty_git_repo):
     _add_manifest(MANIFEST_WITHOUT_ANNOTATION)
 
-    updater = Updater(Git(empty_git_repo), LatestChart("mock://"))
+    updater = Updater(Git(empty_git_repo), HelmRepo("mock://"))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == MANIFEST_WITHOUT_ANNOTATION
@@ -262,7 +262,7 @@ def test_no_annotation(empty_git_repo):
 def test_no_chart_tag(empty_git_repo):
     _add_manifest(MANIFEST_WITHOUT_CHART_VERSION_PATTERN)
 
-    updater = Updater(Git(empty_git_repo), LatestChart("mock://"))
+    updater = Updater(Git(empty_git_repo), HelmRepo("mock://"))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == MANIFEST_WITHOUT_CHART_VERSION_PATTERN
@@ -273,7 +273,7 @@ def test_no_chart_in_helm_repository(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_ANOTHER_CHART)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == MANIFEST_WITH_GLOB_PATTERN
@@ -284,7 +284,7 @@ def test_no_new_chart(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_OLD_CHARTS)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == MANIFEST_WITH_GLOB_PATTERN
@@ -295,7 +295,7 @@ def test_chart_updated_semver(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_SEMVER_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == UPDATED_MANIFEST_WITH_SEMVER_PATTERN
@@ -306,7 +306,7 @@ def test_chart_updated_glob(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == UPDATED_MANIFEST_WITH_GLOB_PATTERN
@@ -317,7 +317,7 @@ def test_chart_updated_regex(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_REGEX_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == UPDATED_MANIFEST_WITH_REGEX_PATTERN
@@ -328,7 +328,7 @@ def test_default_image_updated(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_SINGLE_IMAGE)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == UPDATED_MANIFEST_WITH_SINGLE_IMAGE
@@ -339,7 +339,7 @@ def test_multiple_images_updated(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_MULTIPLE_IMAGES)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == UPDATED_MANIFEST_WITH_MULTIPLE_IMAGES
@@ -351,7 +351,7 @@ def test_chart_not_updated_manidest_outside_of_path(empty_git_repo, requests_moc
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo, git_path="deploy/"), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo, git_path="deploy/"), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == MANIFEST_WITH_GLOB_PATTERN
@@ -363,7 +363,7 @@ def test_chart_updated_manifest_inside_path(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN, path="deploy/helmrelease.yaml")
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
-    updater = Updater(Git(empty_git_repo, git_path="deploy/"), LatestChart(HELM_REPO_URL))
+    updater = Updater(Git(empty_git_repo, git_path="deploy/"), HelmRepo(HELM_REPO_URL))
     updater.update_loop(one_shot=True)
 
     assert _get_manifest("deploy/helmrelease.yaml") == UPDATED_MANIFEST_WITH_GLOB_PATTERN
@@ -374,7 +374,7 @@ def test_git_over_ssh():
     GIT_REPO = "git@github.com:rossumai/_non_existing_repo_"
     with NamedTemporaryFile(mode="w") as tmp, patch("chart_updater.git.run") as run:
         run.return_value=Mock(returncode=111, stdout="Some error")
-        updater = Updater(Git(GIT_REPO, git_ssh_identity=tmp.name), LatestChart(HELM_REPO_URL))
+        updater = Updater(Git(GIT_REPO, git_ssh_identity=tmp.name), HelmRepo(HELM_REPO_URL))
         updater.update_loop(one_shot=True)
         run.assert_called_once()
         assert run.call_args.args[0][0:3] == ["git", "clone", GIT_REPO]
@@ -390,7 +390,7 @@ def test_git_over_https(monkeypatch):
     monkeypatch.setenv("GIT_AUTHKEY", GIT_AUTHKEY)
     with patch("chart_updater.git.run") as run:
         run.return_value=Mock(returncode=111, stdout="Some error")
-        updater = Updater(Git(GIT_REPO), LatestChart(HELM_REPO_URL))
+        updater = Updater(Git(GIT_REPO), HelmRepo(HELM_REPO_URL))
         updater.update_loop(one_shot=True)
         run.assert_called_once()
         assert run.call_args.args[0][0:3] == ["git", "clone", GIT_REPO_RESOLVED]

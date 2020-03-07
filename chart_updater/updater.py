@@ -5,7 +5,7 @@ from time import sleep
 from typing import Optional
 
 from . import UpdateException
-from .chart import LatestChart
+from .helm_repo import HelmRepo
 from .git import Git
 from .manifest import Manifest
 
@@ -16,13 +16,13 @@ class Updater:
     def __init__(
         self,
         git: Git,
-        chart: LatestChart,
+        helm_repo: HelmRepo,
         refresh_period: int = 60,
         annotation_prefix: str = "rossum.ai",
         event: Optional[Event] = None,
     ) -> None:
         self.git = git
-        self.chart = chart
+        self.helm_repo = helm_repo
         self.annotation_prefix = annotation_prefix
         self.refresh_period = refresh_period
         self._event = event
@@ -45,7 +45,7 @@ class Updater:
 
         updated = False
         for path in self.git.grep(self.annotation_prefix):
-            manifest = Manifest(self.chart, self.annotation_prefix)
+            manifest = Manifest(self.helm_repo, self.annotation_prefix)
             manifest.load(path)
             if manifest.update_with_latest_chart():
                 manifest.save(path)
