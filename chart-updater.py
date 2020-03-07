@@ -31,10 +31,10 @@ def healthz():
 
 @click.command()
 @click.option("--git-url", required=True, help="Git config repo URL.")
-@click.option("--git-path", default=".", show_default=True, help="Git config path.")
 @click.option(
     "--git-branch", default="master", show_default=True, help="Git config repo ref."
 )
+@click.option("--git-path", default=".", show_default=True, help="Git config path.")
 @click.option(
     "--git-user",
     default="Chart Sync",
@@ -66,8 +66,8 @@ def healthz():
 )
 def chart_updater(
     git_url,
-    git_path,
     git_branch,
+    git_path,
     git_user,
     git_email,
     git_timeout,
@@ -78,7 +78,7 @@ def chart_updater(
     sync_interval,
     annotation_prefix,
 ):
-    git = Git(git_url, git_path, git_branch, git_ssh_identity, git_user, git_email, git_timeout, git_ssh_identity)
+    git = Git(git_url, git_branch, git_path, git_user, git_email, git_timeout, git_ssh_identity)
     chart = LatestChart(helm_repo_url, helm_repo_username, helm_repo_password)
     updater = Updater(git, chart, sync_interval, annotation_prefix, event=event)
     updater.start()

@@ -13,16 +13,16 @@ class Git:
     def __init__(
         self,
         git_url: str,
-        git_path: str = ".",
         git_ref: str = "master",
+        git_path: str = ".",
         git_user: str = "user",
         git_email: str = "git@rossum.ai",
         git_timeout: int = 30,
         git_ssh_identity: Optional[str] = None,
     ):
         self.git_url = git_url
-        self.git_path = git_path
         self.git_ref = git_ref
+        self.git_path = git_path
         self.git_user = git_user
         self.git_email = git_email
         self.git_timeout = git_timeout
