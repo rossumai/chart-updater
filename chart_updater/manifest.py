@@ -15,8 +15,7 @@ log = logging.getLogger("chart-updater")
 
 
 class Manifest:
-    def __init__(self, helm_repo: HelmRepo, annotation_prefix: str = "rossum.ai"):
-        self.helm_repo = helm_repo
+    def __init__(self, annotation_prefix: str = "rossum.ai"):
         self.annotation_prefix = annotation_prefix
         self._chart_auto_update_key = f"{annotation_prefix}/{CHART_AUTO_UPDATE}"
         self._chart_version_pattern_key = f"{annotation_prefix}/{CHART_VERSION_PATTERN}"
@@ -57,6 +56,10 @@ class Manifest:
         except TypeError:
             return None
 
+    @property
+    def chart_version_pattern(self) -> Optional[str]:
+        return self._manifest["metadata"]["annotations"][self._chart_version_pattern_key]
+
     def _auto_updates_enabled(self) -> bool:
         kind = self._manifest.get("kind")
         chart = self._manifest.get("spec", {}).get("chart") or {}
@@ -72,12 +75,6 @@ class Manifest:
         if str(annotations[self._chart_auto_update_key]) != "True":
             return False
         return True
-
-    def _load_latest_chart(self) -> None:
-        chart_version_pattern = self._manifest["metadata"]["annotations"][
-            self._chart_version_pattern_key
-        ]
-        self.helm_repo.load(self.chart_name, chart_version_pattern)
 
     def _update_chart(self, version: str) -> None:
         self._manifest["spec"]["chart"]["version"] = version
@@ -104,12 +101,15 @@ class Manifest:
                 )
         return image_tag
 
-    def update_with_latest_chart(self) -> bool:
+    def update_with_latest_chart(self, helm_repo: HelmRepo) -> bool:
         if not self._auto_updates_enabled():
             return False
-        self._load_latest_chart()
-        if self.chart_version == self.helm_repo.version:
+        latest_chart_version, latest_chart_app_version = helm_repo.get_latest_chart_versions(
+            self.chart_name,
+            self.chart_version_pattern
+        )
+        if self.chart_version == latest_chart_version:
             return False
-        self._update_chart(self.helm_repo.version)
-        self._update_image(self.helm_repo.app_version)
+        self._update_chart(latest_chart_version)
+        self._update_image(latest_chart_app_version)
         return True

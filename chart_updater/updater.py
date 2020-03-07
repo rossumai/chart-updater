@@ -42,12 +42,13 @@ class Updater:
     def _one_update_iteration(self) -> None:
         log.info("Checking for chart updates")
         self.git.update_branch()
+        self.helm_repo.update()
 
         updated = False
         for path in self.git.grep(self.annotation_prefix):
-            manifest = Manifest(self.helm_repo, self.annotation_prefix)
+            manifest = Manifest(self.annotation_prefix)
             manifest.load(path)
-            if manifest.update_with_latest_chart():
+            if manifest.update_with_latest_chart(self.helm_repo):
                 manifest.save(path)
                 commit_message = self._build_commit_message(manifest)
                 self.git.update_file(path, commit_message)

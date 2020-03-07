@@ -1,6 +1,6 @@
 import fnmatch
 import re
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 import semantic_version
@@ -20,15 +20,14 @@ class HelmRepo:
         self.helm_repo_url = helm_repo_url
         self.helm_repo_username = helm_repo_username
         self.helm_repo_password = helm_repo_password
-        self._chart = {}
+        self._index = None
 
-    @property
-    def version(self) -> str:
-        return self._chart.get("version")
+    def update(self):
+        self._index = self._load_chart_repo_index()
 
-    @property
-    def app_version(self) -> str:
-        return self._chart.get("appVersion")
+    def get_latest_chart_versions(self, chart_name: str, chart_version_pattern: str) -> Tuple[str, str]:
+        chart = self._get_latest_chart(chart_name, chart_version_pattern)
+        return chart.get("version"), chart.get("appVersion")
 
     def _load_chart_repo_index(self):
         try:
@@ -40,6 +39,19 @@ class HelmRepo:
             return YAML().load(response.content)
         except RequestException as e:
             raise UpdateException(f"Cannot download chart list: {str(e)}")
+
+    def _get_latest_chart(self, chart_name: str, chart_version_pattern: str) -> dict:
+        try:
+            matching_charts = []
+            charts = self._index["entries"][chart_name]
+            for chart in charts:
+                if self._chart_pattern_match(chart["version"], chart_version_pattern):
+                    matching_charts.append(chart)
+            return sorted(matching_charts, key=lambda c: c["created"])[-1]
+        except (IndexError, KeyError):
+            raise UpdateException(
+                f"No chart {chart_name} matching {chart_version_pattern} found in the Helm repository"
+            )
 
     @staticmethod
     def _chart_pattern_match(version: str, pattern: str) -> bool:
@@ -57,22 +69,3 @@ class HelmRepo:
             return matcher.match(semantic_version.Version(version))
         else:
             raise UpdateException("Invalid pattern: {pattern}")
-
-    def _get_latest_chart(
-        self, index, chart_name: str, chart_version_pattern: str
-    ) -> dict:
-        try:
-            matching_charts = []
-            charts = index["entries"][chart_name]
-            for chart in charts:
-                if self._chart_pattern_match(chart["version"], chart_version_pattern):
-                    matching_charts.append(chart)
-            return sorted(matching_charts, key=lambda c: c["created"])[-1]
-        except (IndexError, KeyError):
-            raise UpdateException(
-                f"No chart {chart_name} matching {chart_version_pattern} found in the Helm repository"
-            )
-
-    def load(self, chart_name: str, chart_version_pattern: str) -> None:
-        index = self._load_chart_repo_index()
-        self._chart = self._get_latest_chart(index, chart_name, chart_version_pattern)
