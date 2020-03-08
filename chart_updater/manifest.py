@@ -94,10 +94,11 @@ class Manifest:
     def _update_chart(self, new_version: str) -> bool:
         if new_version is None:
             return False
-        if self.chart_version == new_version:
+        old_version = self.chart_version
+        if old_version == new_version:
             return False
         self._manifest["spec"]["chart"]["version"] = new_version
-        log.info(f"Updating {self.chart_name} to {new_version}")
+        log.info(f"Updating chart {self.chart_name} from {old_version} to {new_version}")
         return True
 
     def _update_image(self, new_tag: Optional[str]) -> bool:
@@ -121,7 +122,7 @@ class Manifest:
                 image["tag"] = new_tag
                 updated = True
                 log.info(
-                    f"Updating image of {self.chart_name} from {image_name}:{old_tag} to {image_name}:{new_tag}"
+                    f"Updating image {self.chart_name}:{image_name} from {old_tag} to {new_tag}"
                 )
         return updated
 

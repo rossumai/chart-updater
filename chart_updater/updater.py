@@ -34,12 +34,12 @@ class Updater:
     @staticmethod
     def _build_commit_message(manifest: Manifest) -> str:
         chart_name = manifest.chart_name
-        chart_version = manifest.chart_version
+        parts = []
+        if manifest.chart_updated:
+            parts.append(manifest.chart_version)
         if manifest.image_updated:
-            tag = f", image {manifest.image_tag}"
-        else:
-            tag = ""
-        return f"Release of {chart_name} {chart_version}{tag}"
+            parts.append(f"image {manifest.image_tag}")
+        return f"Release of {chart_name} {', '.join(parts)}"
 
     def _one_update_iteration(self) -> None:
         log.info("Checking for chart updates")
