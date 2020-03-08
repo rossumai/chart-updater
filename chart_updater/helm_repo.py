@@ -60,4 +60,4 @@ class HelmRepo:
             matcher = semantic_version.NpmSpec(value)
             return matcher.match(semantic_version.Version(version))
         else:
-            raise UpdateException("Invalid pattern: {pattern}")
+            raise UpdateException("Invalid chart version pattern: {pattern}")
