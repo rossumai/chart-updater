@@ -11,7 +11,7 @@ from chart_updater.helm_repo import HelmRepo
 from chart_updater.git import Git
 from chart_updater.updater import Updater
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 log = logging.getLogger("chart-updater")
 app = Flask(__name__)
 event = threading.Event()
