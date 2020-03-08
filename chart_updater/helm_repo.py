@@ -50,7 +50,7 @@ class HelmRepo:
         try:
             (type_, value) = pattern.split(":")
         except ValueError:
-            (type_, value) = (None, None)
+            type_, value = None, None
 
         if type_ == "glob":
             return fnmatch.fnmatch(version, value)
