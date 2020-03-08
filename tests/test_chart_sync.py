@@ -28,7 +28,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
 spec:
   chart:
   values:
@@ -40,7 +40,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: semver:1.2.x
 spec:
   chart:
@@ -55,7 +55,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: semver:1.2.x
 spec:
   chart:
@@ -70,7 +70,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.2.*
 spec:
   chart:
@@ -85,7 +85,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.2.*
 spec:
   chart:
@@ -100,7 +100,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: regex:1\.2\..*
 spec:
   chart:
@@ -115,7 +115,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: regex:1\.2\..*
 spec:
   chart:
@@ -166,9 +166,9 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.2.*
-    rossum.ai/image.chart-image: true
+    rossum.ai/update-image.chart-image: true
 spec:
   chart:
     name: hello-world
@@ -183,9 +183,9 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.2.*
-    rossum.ai/image.chart-image: true
+    rossum.ai/update-image.chart-image: true
 spec:
   chart:
     name: hello-world
@@ -201,10 +201,10 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.2.*
-    rossum.ai/image.chart-image: true
-    rossum.ai/image.other: true
+    rossum.ai/update-image.chart-image: true
+    rossum.ai/update-image.other: true
 spec:
   chart:
     name: hello-world
@@ -223,10 +223,10 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.2.*
-    rossum.ai/image.chart-image: true
-    rossum.ai/image.other: true
+    rossum.ai/update-image.chart-image: true
+    rossum.ai/update-image.other: true
 spec:
   chart:
     name: hello-world

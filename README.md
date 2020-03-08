@@ -36,7 +36,7 @@ for a complete list of available configuration options.
 Similar to Flux, annotations are used to mark Helm charts that should be
 updated. The only supported manifest type is `HelmRelease`.
 
-* `rossum.ai/allow-chart-update` -- Switches-on chart auto-update.
+* `rossum.ai/chart-auto-update` -- Switches-on chart auto-update.
 * `rossum.ai/chart-version` -- Specifies which Chart versions should be used for auto-update. May be `semver`, `glob` or `regex` pattern.
 * `rossum.ai/update-image.chart-image` -- Switches-on update of main chart image
 * `rossum.ai/update-image.<NAME>` -- Switches-on update of a named image
@@ -52,7 +52,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.0.*
     # rossum.ai/chart-version: semver:1.0.x
     # rossum.ai/chart-version: regex:^1\.0\..*
@@ -76,7 +76,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/allow-chart-update: true
+    rossum.ai/chart-auto-update: true
     rossum.ai/chart-version: glob:1.0.*
     rossum.ai/update-image.chart-image: true
 spec:

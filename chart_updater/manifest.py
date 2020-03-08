@@ -8,9 +8,9 @@ from ruamel.yaml import YAML
 from . import UpdateException
 from .helm_repo import HelmRepo
 
-CHART_AUTO_UPDATE = "allow-chart-update"
+CHART_AUTO_UPDATE = "chart-auto-update"
 CHART_VERSION_PATTERN = "chart-version"
-IMAGE_PREFIX = "image."
+IMAGE_PREFIX = "update-image."
 DEFAULT_CHART_IMAGE = "chart-image"
 
 log = logging.getLogger("chart-updater")
