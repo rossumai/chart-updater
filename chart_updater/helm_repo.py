@@ -25,6 +25,7 @@ class HelmRepo:
     def _load_chart_repo_index(self) -> dict:
         try:
             response = requests.get(f"{self.helm_repo_url}/index.yaml")
+            response.raise_for_status()
         except RequestException as e:
             raise UpdateException(f"Cannot download chart list: {str(e)}")
         return yaml.safe_load(response.content)
