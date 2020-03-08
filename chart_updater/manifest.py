@@ -112,6 +112,8 @@ class Manifest:
         )
         if self.chart_version == latest_chart_version:
             return False
+        if latest_chart_version is None:
+            return False
         self._update_chart(latest_chart_version)
         self._update_image(latest_chart_app_version)
         return True

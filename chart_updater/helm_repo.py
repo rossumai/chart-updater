@@ -1,4 +1,5 @@
 import fnmatch
+import logging
 import re
 from typing import Optional, Tuple
 
@@ -8,6 +9,8 @@ import yaml
 from requests import RequestException
 
 from chart_updater import UpdateException
+
+log = logging.getLogger("chart-updater")
 
 
 class HelmRepo:
@@ -39,9 +42,8 @@ class HelmRepo:
                     matching_charts.append(chart)
             return sorted(matching_charts, key=lambda c: c["created"])[-1]
         except (IndexError, KeyError):
-            raise UpdateException(
-                f"No chart {chart_name} matching {chart_version_pattern} found in the Helm repository"
-            )
+            log.info(f"No chart {chart_name} matching {chart_version_pattern} found in the Helm repository")
+            return {}
 
     @staticmethod
     def _chart_pattern_match(version: str, pattern: str) -> bool:
