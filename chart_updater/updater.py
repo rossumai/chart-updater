@@ -45,7 +45,7 @@ class Updater:
         self.helm_repo.update()
 
         updated = False
-        for path in self.git.grep(self.annotation_prefix):
+        for path in self.git.grep(self.annotation_prefix + "/"):
             manifest = Manifest(self.annotation_prefix)
             manifest.load(path)
             if manifest.update_with_latest_chart(self.helm_repo):
