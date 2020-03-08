@@ -22,6 +22,8 @@ class Manifest:
         self._chart_auto_update_key = f"{annotation_prefix}/{CHART_AUTO_UPDATE}"
         self._chart_version_pattern_key = f"{annotation_prefix}/{CHART_VERSION_PATTERN}"
         self._manifest = None
+        self._chart_version_updated = False
+        self._chart_image_updated = False
 
     def load(self, path: str) -> None:
         try:
@@ -62,30 +64,47 @@ class Manifest:
     def chart_version_pattern(self) -> Optional[str]:
         return self._manifest["metadata"]["annotations"][self._chart_version_pattern_key]
 
+    @property
+    def chart_updated(self) -> bool:
+        return self._chart_updated
+
+    @property
+    def image_updated(self) -> bool:
+        return self._image_updated
+
     def _auto_updates_enabled(self) -> bool:
-        kind = self._manifest.get("kind")
-        chart = self._manifest.get("spec", {}).get("chart") or {}
-        annotations = self._manifest.get("metadata", {}).get("annotations") or {}
-        if kind != "HelmRelease":
+        try:
+            kind = self._manifest["kind"]
+            chart = self._manifest["spec"]["chart"]
+            annotations = self._manifest["metadata"]["annotations"]
+            if kind != "HelmRelease":
+                return False
+            if "name" not in chart:
+                return False
+            if "version" not in chart:
+                return False
+            if str(annotations[self._chart_auto_update_key]) != "True":
+                return False
+            if self._chart_version_pattern_key not in annotations:
+                return False
+            return True
+        except KeyError:
             return False
-        if "name" not in chart:
+
+    def _update_chart(self, new_version: str) -> bool:
+        if new_version is None:
             return False
-        if "version" not in chart:
+        if self.chart_version == new_version:
             return False
-        if self._chart_version_pattern_key not in annotations:
-            return False
-        if str(annotations[self._chart_auto_update_key]) != "True":
-            return False
+        self._manifest["spec"]["chart"]["version"] = new_version
+        log.info(f"Updating {self.chart_name} to {new_version}")
         return True
 
-    def _update_chart(self, version: str) -> None:
-        self._manifest["spec"]["chart"]["version"] = version
-        log.info(f"Updating {self.chart_name} to {version}")
+    def _update_image(self, new_tag: Optional[str]) -> bool:
+        if new_tag is None:
+            return False
 
-    def _update_image(self, image_tag: Optional[str]) -> Optional[str]:
-        if image_tag is None:
-            return
-
+        updated = False
         annotation_prefix = f"{self.annotation_prefix}/{IMAGE_PREFIX}"
         for key, value in self._manifest["metadata"]["annotations"].items():
             if str(value) != "True":
@@ -97,23 +116,24 @@ class Manifest:
                 else:
                     image = self._manifest["spec"]["values"][image_name]["image"]
                 old_tag = image["tag"]
-                image["tag"] = image_tag
+                if old_tag == new_tag:
+                    continue
+                image["tag"] = new_tag
+                updated = True
                 log.info(
-                    f"Updating image of {self.chart_name} from {image_name}:{old_tag} to {image_name}:{image_tag}"
+                    f"Updating image of {self.chart_name} from {image_name}:{old_tag} to {image_name}:{new_tag}"
                 )
-        return image_tag
+        return updated
 
     def update_with_latest_chart(self, helm_repo: HelmRepo) -> bool:
         if not self._auto_updates_enabled():
             return False
+
         latest_chart_version, latest_chart_app_version = helm_repo.get_latest_chart_versions(
             self.chart_name,
             self.chart_version_pattern
         )
-        if self.chart_version == latest_chart_version:
-            return False
-        if latest_chart_version is None:
-            return False
-        self._update_chart(latest_chart_version)
-        self._update_image(latest_chart_app_version)
-        return True
+
+        self._chart_updated = self._update_chart(latest_chart_version)
+        self._image_updated = self._update_image(latest_chart_app_version)
+        return self._chart_updated or self._image_updated

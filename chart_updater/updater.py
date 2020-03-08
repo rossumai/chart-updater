@@ -35,8 +35,10 @@ class Updater:
     def _build_commit_message(manifest: Manifest) -> str:
         chart_name = manifest.chart_name
         chart_version = manifest.chart_version
-        image_tag = manifest.image_tag
-        tag = ", image tag {image_tag})" if image_tag else ""
+        if manifest.image_updated:
+            tag = f", image {manifest.image_tag}"
+        else:
+            tag = ""
         return f"Release of {chart_name} {chart_version}{tag}"
 
     def _one_update_iteration(self) -> None:
