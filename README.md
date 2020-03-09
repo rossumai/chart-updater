@@ -3,8 +3,7 @@
 Chart-updater is a [Flux](https://github.com/fluxcd/flux) companion that allows
 for automatic [Helm](https://helm.sh) chart updates. It monitors Helm chart
 respository for new chart versions. If new version is found, related
-HelmRelease manifest in the git config respository is updated in the git config
-repository.
+HelmRelease manifest is updated in the git config repository.
 
 This may be useful for deploying charts of your components, especially if the
 code and chart template of the component share the same repository and
