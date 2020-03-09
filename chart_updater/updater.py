@@ -1,5 +1,4 @@
 import logging
-import os
 from threading import Event, Thread
 from time import sleep
 from typing import Optional
@@ -65,7 +64,6 @@ class Updater:
         if self._cloned:
             return
         self.git.clone_repo()
-        os.chdir(self.git.git_dir)
         self._cloned = True
 
     def update_loop(self, one_shot: bool = False) -> None:

@@ -1,6 +1,6 @@
 import logging
 import tempfile
-from os import environ, path
+from os import environ, path, chdir
 from subprocess import PIPE, STDOUT, run
 from typing import List, Optional
 
@@ -27,7 +27,7 @@ class Git:
         self.git_email = git_email
         self.git_timeout = git_timeout
         self.git_ssh_identity = git_ssh_identity
-        self.git_dir = None
+        self._git_dir = None
 
     def _run(self, command: List[str], max_ok_returncode: int = 0) -> str:
         log.debug("Running command: {' '.join(command)}")
@@ -44,10 +44,13 @@ class Git:
         return [path.expandvars(part) for part in command]
 
     def clone_repo(self) -> None:
-        self.git_dir = tempfile.mkdtemp()
+        self._git_dir = tempfile.mkdtemp()
         self._run(
-            ["git", "clone", self.git_url, "--branch", self.git_ref, self.git_dir]
+            ["git", "clone", self.git_url, "--branch", self.git_ref, self._git_dir]
         )
+        chdir(self._git_dir)
+        self._run(["git", "config", "user.name", self.git_user])
+        self._run(["git", "config", "user.email", self.git_email])
 
     def update_branch(self) -> None:
         self._run(["git", "fetch", "origin"])
