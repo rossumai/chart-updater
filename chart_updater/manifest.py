@@ -3,6 +3,7 @@ from typing import Optional
 
 # We use ruamel library for YAML manipulation because it preserves format, comments, etc.
 # But it is slower than PyYAML for large documents.
+from ruamel import yaml
 from ruamel.yaml import YAML
 
 from . import UpdateException
@@ -28,14 +29,14 @@ class Manifest:
     def load(self, path: str) -> None:
         try:
             with open(path, "r") as f:
-                self._manifest = YAML().load(f)
+                self._manifest = yaml.round_trip_load(f, preserve_quotes=True)
         except Exception as e:
             raise UpdateException(f"Cannot load manifest {path}: {str(e)}")
 
     def save(self, path: str) -> None:
         try:
             with open(path, "w") as f:
-                YAML().dump(self._manifest, f)
+                yaml.round_trip_dump(self._manifest, f)
         except Exception as e:
             raise UpdateException(f"Cannot update manifest {path}: {str(e)}")
 
