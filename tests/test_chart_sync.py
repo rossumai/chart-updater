@@ -346,7 +346,7 @@ def test_multiple_images_updated(empty_git_repo, requests_mock):
     assert re.search(MULTIPLE_IMAGES_RELEASE_COMMIT_RE, _last_commit())
 
 
-def test_chart_not_updated_manidest_outside_of_path(empty_git_repo, requests_mock):
+def test_chart_not_updated_manifest_outside_of_path(empty_git_repo, requests_mock):
     mkdir("deploy")
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
