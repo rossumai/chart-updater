@@ -73,6 +73,10 @@ class Manifest:
     def image_updated(self) -> bool:
         return self._image_updated
 
+    @staticmethod
+    def _is_true_value(value: str) -> bool:
+        return str(value).lower() == "true"
+
     def _auto_updates_enabled(self) -> bool:
         try:
             kind = self._manifest["kind"]
@@ -84,7 +88,7 @@ class Manifest:
                 return False
             if "version" not in chart:
                 return False
-            if str(annotations[self._chart_auto_update_key]) != "True":
+            if not self._is_true_value(annotations[self._chart_auto_update_key]):
                 return False
             if self._chart_version_pattern_key not in annotations:
                 return False
@@ -109,7 +113,7 @@ class Manifest:
         updated = False
         annotation_prefix = f"{self.annotation_prefix}/{IMAGE_PREFIX}"
         for key, value in self._manifest["metadata"]["annotations"].items():
-            if str(value) != "True":
+            if not self._is_true_value(value):
                 continue
             if key.startswith(annotation_prefix):
                 image_name = key[len(annotation_prefix) :]
