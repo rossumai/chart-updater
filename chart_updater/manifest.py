@@ -3,6 +3,7 @@ from typing import Optional
 
 # We use ruamel library for YAML manipulation because it preserves format, comments, etc.
 # But it is slower than PyYAML for large documents.
+from ruamel import yaml
 from ruamel.yaml import YAML
 
 from . import UpdateException
@@ -28,14 +29,14 @@ class Manifest:
     def load(self, path: str) -> None:
         try:
             with open(path, "r") as f:
-                self._manifest = YAML().load(f)
+                self._manifest = yaml.round_trip_load(f, preserve_quotes=True)
         except Exception as e:
             raise UpdateException(f"Cannot load manifest {path}: {str(e)}")
 
     def save(self, path: str) -> None:
         try:
             with open(path, "w") as f:
-                YAML().dump(self._manifest, f)
+                yaml.round_trip_dump(self._manifest, f)
         except Exception as e:
             raise UpdateException(f"Cannot update manifest {path}: {str(e)}")
 
@@ -72,6 +73,10 @@ class Manifest:
     def image_updated(self) -> bool:
         return self._image_updated
 
+    @staticmethod
+    def _is_true_value(value: str) -> bool:
+        return str(value).lower() == "true"
+
     def _auto_updates_enabled(self) -> bool:
         try:
             kind = self._manifest["kind"]
@@ -83,7 +88,7 @@ class Manifest:
                 return False
             if "version" not in chart:
                 return False
-            if str(annotations[self._chart_auto_update_key]) != "True":
+            if not self._is_true_value(annotations[self._chart_auto_update_key]):
                 return False
             if self._chart_version_pattern_key not in annotations:
                 return False
@@ -108,7 +113,7 @@ class Manifest:
         updated = False
         annotation_prefix = f"{self.annotation_prefix}/{IMAGE_PREFIX}"
         for key, value in self._manifest["metadata"]["annotations"].items():
-            if str(value) != "True":
+            if not self._is_true_value(value):
                 continue
             if key.startswith(annotation_prefix):
                 image_name = key[len(annotation_prefix) :]

@@ -51,7 +51,7 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/chart-auto-update: true
+    rossum.ai/chart-auto-update: "true"
     rossum.ai/chart-version: glob:1.0.*
     # rossum.ai/chart-version: semver:1.0.x
     # rossum.ai/chart-version: regex:^1\.0\..*
@@ -75,9 +75,9 @@ metadata:
   name: hello-world
   namespace: default
   annotations:
-    rossum.ai/chart-auto-update: true
+    rossum.ai/chart-auto-update: "true"
     rossum.ai/chart-version: glob:1.0.*
-    rossum.ai/update-image.chart-image: true
+    rossum.ai/update-image.chart-image: "true"
 spec:
   chart:
     repository: https://helm.lol
