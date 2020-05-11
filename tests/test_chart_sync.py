@@ -239,6 +239,30 @@ spec:
         tag: v10.11.15
 """
 
+MANIFEST_WITH_MULTIPLE_DOCUMENTS = \
+"""kind: HelmRelease
+metadata:
+  name: hello-world
+  namespace: default
+  annotations:
+    rossum.ai/chart-auto-update: "true"
+spec:
+  chart:
+    name: hello-world
+    version: 1.2.3
+---
+kind: HelmRelease
+metadata:
+  name: hello-world2
+  namespace: default
+  annotations:
+    rossum.ai/chart-auto-update: "true"
+spec:
+  chart:
+    name: hello-world2
+    version: 1.2.3
+"""
+
 INITIAL_COMMIT_RE = re.compile(r"Init")
 CHART_RELEASE_COMMIT_RE = re.compile(r"Release of hello-world 1.2.4.*\+\s+version:\s+1.2.4", flags=re.DOTALL)
 SINGLE_IMAGE_RELEASE_COMMIT_RE = re.compile(r"Release of hello-world 1.2.4.*tag:\s+v10.11.15", flags=re.DOTALL)
@@ -379,6 +403,23 @@ def test_chart_updated_manifest_inside_path(empty_git_repo, requests_mock):
 
     assert _get_manifest("deploy/helmrelease.yaml") == UPDATED_MANIFEST_WITH_GLOB_PATTERN
     assert re.search(CHART_RELEASE_COMMIT_RE, _last_commit())
+
+
+def test_does_not_crash_for_multidoc(empty_git_repo, requests_mock):
+    mkdir("deploy")
+    _add_manifest(MANIFEST_WITH_MULTIPLE_DOCUMENTS, path="deploy/1-multi.yaml")
+    _add_manifest(MANIFEST_WITH_SINGLE_IMAGE, path="deploy/2-helmrelease.yaml")
+    _init_commit()
+    requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
+
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
+    updater.update_loop(one_shot=True)
+
+    assert _get_manifest("deploy/1-multi.yaml") == MANIFEST_WITH_MULTIPLE_DOCUMENTS
+    assert (
+        _get_manifest("deploy/2-helmrelease.yaml") == UPDATED_MANIFEST_WITH_SINGLE_IMAGE
+    )
+    assert re.search(SINGLE_IMAGE_RELEASE_COMMIT_RE, _last_commit())
 
 
 def test_git_over_ssh():

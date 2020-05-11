@@ -1,7 +1,7 @@
 import logging
 from threading import Event, Thread
 from time import sleep
-from typing import Optional
+from typing import Optional, Iterator
 
 from . import UpdateException
 from .helm_repo import HelmRepo
@@ -40,21 +40,30 @@ class Updater:
             parts.append(f"image {manifest.image_tag}")
         return f"Release of {chart_name} {', '.join(parts)}"
 
+    def _manifests_to_check(self) -> Iterator[str]:
+        return manifests_with_annotation
+
+    def _update_manifest(self, path: str) -> bool:
+        try:
+            manifest = Manifest(self.annotation_prefix)
+            manifest.load(path)
+            if not manifest.update_with_latest_chart(self.helm_repo):
+                return False
+            manifest.save(path)
+            commit_message = self._build_commit_message(manifest)
+            self.git.update_file(path, commit_message)
+            return True
+        except UpdateException as e:
+            log.info(str(e))
+            return False
+
     def _one_update_iteration(self) -> None:
         log.info("Checking for chart updates")
         self.git.update_branch()
         self.helm_repo.update()
 
-        updated = False
-        for path in self.git.grep(self.annotation_prefix + "/"):
-            manifest = Manifest(self.annotation_prefix)
-            manifest.load(path)
-            if manifest.update_with_latest_chart(self.helm_repo):
-                manifest.save(path)
-                commit_message = self._build_commit_message(manifest)
-                self.git.update_file(path, commit_message)
-                updated = True
-        if updated:
+        updated = [self._update_manifest(path) for path in self._manifests_to_check()]
+        if any(updated):
             self.git.push_to_branch()
             log.info("Update finished")
         else:
