@@ -41,7 +41,9 @@ class Updater:
         return f"Release of {chart_name} {', '.join(parts)}"
 
     def _manifests_to_check(self) -> Iterator[str]:
-        return manifests_with_annotation
+        helmreleases = self.git.grep("HelmRelease")
+        manifests_with_annotation = self.git.grep(self.annotation_prefix + "/")
+        return iter(set(helmreleases).intersection(manifests_with_annotation))
 
     def _update_manifest(self, path: str) -> bool:
         try:
