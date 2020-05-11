@@ -251,6 +251,7 @@ HELM_REPO_INDEX = f"{HELM_REPO_URL}/index.yaml"
 
 def test_no_annotation(empty_git_repo):
     _add_manifest(MANIFEST_WITHOUT_ANNOTATION)
+    _init_commit()
 
     updater = Updater(Git(empty_git_repo), HelmRepo("mock://"))
     updater.update_loop(one_shot=True)
@@ -261,6 +262,7 @@ def test_no_annotation(empty_git_repo):
 
 def test_no_chart_tag(empty_git_repo):
     _add_manifest(MANIFEST_WITHOUT_CHART_VERSION_PATTERN)
+    _init_commit()
 
     updater = Updater(Git(empty_git_repo), HelmRepo("mock://"))
     updater.update_loop(one_shot=True)
@@ -271,6 +273,7 @@ def test_no_chart_tag(empty_git_repo):
 
 def test_no_chart_in_helm_repository(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_ANOTHER_CHART)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -282,6 +285,7 @@ def test_no_chart_in_helm_repository(empty_git_repo, requests_mock):
 
 def test_no_new_chart(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_OLD_CHARTS)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -293,6 +297,7 @@ def test_no_new_chart(empty_git_repo, requests_mock):
 
 def test_chart_updated_semver(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_SEMVER_PATTERN)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -304,6 +309,7 @@ def test_chart_updated_semver(empty_git_repo, requests_mock):
 
 def test_chart_updated_glob(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -315,6 +321,7 @@ def test_chart_updated_glob(empty_git_repo, requests_mock):
 
 def test_chart_updated_regex(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_REGEX_PATTERN)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -326,6 +333,7 @@ def test_chart_updated_regex(empty_git_repo, requests_mock):
 
 def test_default_image_updated(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_SINGLE_IMAGE)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -337,6 +345,7 @@ def test_default_image_updated(empty_git_repo, requests_mock):
 
 def test_multiple_images_updated(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_MULTIPLE_IMAGES)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
@@ -349,6 +358,7 @@ def test_multiple_images_updated(empty_git_repo, requests_mock):
 def test_chart_not_updated_manifest_outside_of_path(empty_git_repo, requests_mock):
     mkdir("deploy")
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN)
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo, git_path="deploy/"), HelmRepo(HELM_REPO_URL))
@@ -361,6 +371,7 @@ def test_chart_not_updated_manifest_outside_of_path(empty_git_repo, requests_moc
 def test_chart_updated_manifest_inside_path(empty_git_repo, requests_mock):
     mkdir("deploy")
     _add_manifest(MANIFEST_WITH_GLOB_PATTERN, path="deploy/helmrelease.yaml")
+    _init_commit()
     requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
 
     updater = Updater(Git(empty_git_repo, git_path="deploy/"), HelmRepo(HELM_REPO_URL))
@@ -400,6 +411,8 @@ def _add_manifest(content: str, path: str = MANIFEST_PATH) -> None:
     with open(path, "w") as f:
         f.write(content)
     run(["git", "add", path])
+
+def _init_commit():
     run(["git", "commit", "-m", "Init"])
     run(["git", "checkout", "-b", "test"])
 
