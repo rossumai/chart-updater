@@ -1,11 +1,11 @@
 import logging
 from threading import Event, Thread
 from time import sleep
-from typing import Optional, Iterator
+from typing import Iterator, Optional
 
 from . import UpdateException
-from .helm_repo import HelmRepo
 from .git import Git
+from .helm_repo import HelmRepo
 from .manifest import Manifest
 
 log = logging.getLogger("chart-updater")

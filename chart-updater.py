@@ -7,8 +7,8 @@ import click
 from flask import Flask
 from waitress import serve
 
-from chart_updater.helm_repo import HelmRepo
 from chart_updater.git import Git
+from chart_updater.helm_repo import HelmRepo
 from chart_updater.updater import Updater
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
@@ -26,7 +26,7 @@ def refresh():
 
 @app.route("/")
 def healthz():
-    return '', 204
+    return "", 204
 
 
 @click.command()
@@ -47,7 +47,12 @@ def healthz():
     show_default=True,
     help="Git commit author's email.",
 )
-@click.option("--git-timeout", default=30, show_default=True, help="Git operations timeout (seconds).")
+@click.option(
+    "--git-timeout",
+    default=30,
+    show_default=True,
+    help="Git operations timeout (seconds).",
+)
 @click.option("--git-ssh-identity", help="Git config SSH identity file (key).")
 @click.option("--helm-repo-url", required=True, help="Helm repo URL.")
 @click.option(
@@ -74,7 +79,15 @@ def chart_updater(
     sync_interval,
     annotation_prefix,
 ):
-    git = Git(git_url, git_branch, git_path, git_user, git_email, git_timeout, git_ssh_identity)
+    git = Git(
+        git_url,
+        git_branch,
+        git_path,
+        git_user,
+        git_email,
+        git_timeout,
+        git_ssh_identity,
+    )
     chart = HelmRepo(helm_repo_url)
     updater = Updater(git, chart, sync_interval, annotation_prefix, event=event)
     updater.start()

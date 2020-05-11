@@ -1,6 +1,6 @@
 import logging
 import tempfile
-from os import environ, path, chdir
+from os import chdir, environ, path
 from subprocess import PIPE, STDOUT, run
 from typing import List, Optional
 
@@ -31,8 +31,18 @@ class Git:
 
     def _run(self, command: List[str], max_ok_returncode: int = 0) -> str:
         log.debug("Running command: {' '.join(command)}")
-        env_copy = {**environ.copy(), "GIT_SSH_COMMAND": f"ssh -i {self.git_ssh_identity} -o StrictHostKeyChecking=yes"}
-        result = run(self._expand_env_vars(command), stdout=PIPE, stderr=STDOUT, text=True, env=env_copy, timeout=self.git_timeout)
+        env_copy = {
+            **environ.copy(),
+            "GIT_SSH_COMMAND": f"ssh -i {self.git_ssh_identity} -o StrictHostKeyChecking=yes",
+        }
+        result = run(
+            self._expand_env_vars(command),
+            stdout=PIPE,
+            stderr=STDOUT,
+            text=True,
+            env=env_copy,
+            timeout=self.git_timeout,
+        )
         if result.returncode > max_ok_returncode:
             raise UpdateException(
                 f"Command \"{' '.join(command)}\" returned {result.returncode}:\n{result.stdout.strip()}"

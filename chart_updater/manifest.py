@@ -4,7 +4,6 @@ from typing import Optional
 # We use ruamel library for YAML manipulation because it preserves format, comments, etc.
 # But it is slower than PyYAML for large documents.
 from ruamel import yaml
-from ruamel.yaml import YAML
 
 from . import UpdateException
 from .helm_repo import HelmRepo
@@ -63,7 +62,9 @@ class Manifest:
 
     @property
     def chart_version_pattern(self) -> Optional[str]:
-        return self._manifest["metadata"]["annotations"][self._chart_version_pattern_key]
+        return self._manifest["metadata"]["annotations"][
+            self._chart_version_pattern_key
+        ]
 
     @property
     def chart_updated(self) -> bool:
@@ -103,7 +104,9 @@ class Manifest:
         if old_version == new_version:
             return False
         self._manifest["spec"]["chart"]["version"] = new_version
-        log.info(f"Updating chart {self.chart_name} from {old_version} to {new_version}")
+        log.info(
+            f"Updating chart {self.chart_name} from {old_version} to {new_version}"
+        )
         return True
 
     def _update_image(self, new_tag: Optional[str]) -> bool:
@@ -135,9 +138,11 @@ class Manifest:
         if not self._auto_updates_enabled():
             return False
 
-        latest_chart_version, latest_chart_app_version = helm_repo.get_latest_chart_versions(
-            self.chart_name,
-            self.chart_version_pattern
+        (
+            latest_chart_version,
+            latest_chart_app_version,
+        ) = helm_repo.get_latest_chart_versions(
+            self.chart_name, self.chart_version_pattern
         )
 
         self._chart_updated = self._update_chart(latest_chart_version)
