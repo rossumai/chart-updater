@@ -42,7 +42,8 @@ class Updater:
 
     def _manifests_to_check(self) -> Iterator[str]:
         return (
-            path for path in self.git.grep(self.annotation_prefix + "/")
+            path for path in self.git.grep("HelmRelease")
+                if self.git.grep(self.annotation_prefix + "/", path)
         )
 
     def _update_manifest(self, path: str) -> bool:
