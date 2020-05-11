@@ -63,8 +63,9 @@ class Git:
         self._run(["git", "add", path_])
         self._run(["git", "commit", "-m", commit_message])
 
-    def grep(self, pattern: str) -> List[str]:
+    def grep(self, pattern: str, path: str = None) -> List[str]:
+        path = path or self.git_path
         output = self._run(
-            ["git", "grep", "-l", pattern, "--", self.git_path], max_ok_returncode=1
+            ["git", "grep", "-l", pattern, "--", path], max_ok_returncode=1
         )
         return list(filter(None, output.split("\n")))
