@@ -1,6 +1,6 @@
 import os
-from subprocess import run
 import tempfile
+from subprocess import run
 
 import pytest
 
@@ -9,7 +9,7 @@ import pytest
 def empty_git_repo():
     git_dir = tempfile.mkdtemp()
     os.chdir(git_dir)
-    run(['git', 'init'])
+    run(["git", "init"])
     run(["git", "config", "user.name", "test"])
     run(["git", "config", "user.email", "test@rossum.ai"])
     return git_dir

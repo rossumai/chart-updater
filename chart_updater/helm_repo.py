@@ -1,7 +1,7 @@
 import fnmatch
 import logging
 import re
-from typing import Optional, Tuple
+from typing import Tuple
 
 import requests
 import semantic_version
@@ -21,7 +21,9 @@ class HelmRepo:
     def update(self):
         self._index = self._load_chart_repo_index()
 
-    def get_latest_chart_versions(self, chart_name: str, chart_version_pattern: str) -> Tuple[str, str]:
+    def get_latest_chart_versions(
+        self, chart_name: str, chart_version_pattern: str
+    ) -> Tuple[str, str]:
         chart = self._get_latest_chart(chart_name, chart_version_pattern)
         return chart.get("version"), chart.get("appVersion")
 
@@ -42,7 +44,9 @@ class HelmRepo:
                     matching_charts.append(chart)
             return sorted(matching_charts, key=lambda c: c["created"])[-1]
         except (IndexError, KeyError):
-            log.info(f"No chart {chart_name} matching {chart_version_pattern} found in the Helm repository")
+            log.info(
+                f"No chart {chart_name} matching {chart_version_pattern} found in the Helm repository"
+            )
             return {}
 
     @staticmethod
