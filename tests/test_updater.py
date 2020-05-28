@@ -1,3 +1,4 @@
+import subprocess
 from tempfile import NamedTemporaryFile
 from unittest.mock import Mock, patch
 
@@ -41,3 +42,13 @@ def test_git_over_https(monkeypatch):
         updater.update_loop(one_shot=True)
         run.assert_called_once()
         assert run.call_args.args[0][0:3] == ["git", "clone", GIT_REPO_RESOLVED]
+
+
+def test_does_not_crash_on_exception():
+    GIT_REPO = "git@github.com:rossumai/_non_existing_repo_"
+
+    with patch("chart_updater.git.run") as run:
+        run.side_effect = subprocess.TimeoutExpired("cmd", 1)
+        updater = Updater(Git(GIT_REPO), HelmRepo(HELM_REPO_URL))
+        updater.update_loop(one_shot=True)
+        run.assert_called_once()

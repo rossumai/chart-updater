@@ -82,7 +82,7 @@ class Updater:
             try:
                 self._ensure_git_repo_cloned()
                 self._one_update_iteration()
-            except UpdateException as e:
+            except Exception as e:
                 log.error(str(e))
 
             if one_shot:
