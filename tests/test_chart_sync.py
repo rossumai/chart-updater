@@ -248,6 +248,13 @@ spec:
     version: 1.2.3
 """
 
+
+MANIFEST_EMPTY = """# HelmRelease
+#     rossum.ai/
+---
+"""
+
+
 INITIAL_COMMIT_RE = re.compile(r"Init")
 CHART_RELEASE_COMMIT_RE = re.compile(
     r"Release of hello-world 1.2.4.*\+\s+version:\s+1.2.4", flags=re.DOTALL
@@ -411,6 +418,21 @@ def test_does_not_crash_for_multidoc(empty_git_repo, requests_mock):
     assert (
         _get_manifest("deploy/2-helmrelease.yaml") == UPDATED_MANIFEST_WITH_SINGLE_IMAGE
     )
+    assert re.search(SINGLE_IMAGE_RELEASE_COMMIT_RE, _last_commit())
+
+
+def test_does_not_crash_for_empty_annotation(empty_git_repo, requests_mock):
+    _add_manifest(MANIFEST_EMPTY, path="1-empty.yaml")
+    _add_manifest(MANIFEST_WITH_SINGLE_IMAGE, path="2-helmrelease.yaml")
+    _init_commit()
+    requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
+
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
+    updater.update_loop(one_shot=True)
+
+    assert _get_manifest("1-empty.yaml") == MANIFEST_EMPTY
+    assert _get_manifest("2-helmrelease.yaml") == UPDATED_MANIFEST_WITH_SINGLE_IMAGE
+
     assert re.search(SINGLE_IMAGE_RELEASE_COMMIT_RE, _last_commit())
 
 
