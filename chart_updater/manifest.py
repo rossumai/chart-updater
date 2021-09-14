@@ -94,7 +94,7 @@ class Manifest:
             if self._chart_version_pattern_key not in annotations:
                 return False
             return True
-        except KeyError:
+        except (KeyError, TypeError):
             return False
 
     def _update_chart(self, new_version: str) -> bool:
