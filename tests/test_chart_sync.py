@@ -8,7 +8,8 @@ from chart_updater.updater import Updater
 
 MANIFEST_PATH = "helmrelease.yaml"
 
-MANIFEST_WITHOUT_ANNOTATION = """kind: HelmRelease
+MANIFEST_WITHOUT_ANNOTATION = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -19,7 +20,8 @@ spec:
   values:
 """
 
-MANIFEST_WITHOUT_CHART_VERSION_PATTERN = """kind: HelmRelease
+MANIFEST_WITHOUT_CHART_VERSION_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -30,7 +32,8 @@ spec:
   values:
 """
 
-MANIFEST_WITH_SEMVER_PATTERN = """kind: HelmRelease
+MANIFEST_WITH_SEMVER_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -44,7 +47,8 @@ spec:
   values:
 """
 
-UPDATED_MANIFEST_WITH_SEMVER_PATTERN = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_SEMVER_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -58,7 +62,8 @@ spec:
   values:
 """
 
-MANIFEST_WITH_GLOB_PATTERN = """kind: HelmRelease
+MANIFEST_WITH_GLOB_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -72,7 +77,8 @@ spec:
   values:
 """
 
-UPDATED_MANIFEST_WITH_GLOB_PATTERN = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_GLOB_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -86,7 +92,8 @@ spec:
   values:
 """
 
-MANIFEST_WITH_REGEX_PATTERN = """kind: HelmRelease
+MANIFEST_WITH_REGEX_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -100,7 +107,8 @@ spec:
   values:
 """
 
-UPDATED_MANIFEST_WITH_REGEX_PATTERN = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_REGEX_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -150,7 +158,8 @@ entries:
     appVersion: v10.11.10
 """
 
-MANIFEST_WITH_SINGLE_IMAGE = """kind: HelmRelease
+MANIFEST_WITH_SINGLE_IMAGE = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -166,7 +175,8 @@ spec:
     image:
       tag: v0.0.1"""
 
-UPDATED_MANIFEST_WITH_SINGLE_IMAGE = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_SINGLE_IMAGE = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -183,7 +193,8 @@ spec:
       tag: v10.11.15
 """
 
-MANIFEST_WITH_MULTIPLE_IMAGES = """kind: HelmRelease
+MANIFEST_WITH_MULTIPLE_IMAGES = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -204,7 +215,8 @@ spec:
         tag: v0.0.1
 """
 
-UPDATED_MANIFEST_WITH_MULTIPLE_IMAGES = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_MULTIPLE_IMAGES = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -225,7 +237,8 @@ spec:
         tag: v10.11.15
 """
 
-MANIFEST_WITH_MULTIPLE_DOCUMENTS = """kind: HelmRelease
+MANIFEST_WITH_MULTIPLE_DOCUMENTS = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
