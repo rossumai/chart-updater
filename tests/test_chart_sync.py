@@ -8,7 +8,8 @@ from chart_updater.updater import Updater
 
 MANIFEST_PATH = "helmrelease.yaml"
 
-MANIFEST_WITHOUT_ANNOTATION = """kind: HelmRelease
+MANIFEST_WITHOUT_ANNOTATION = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -19,7 +20,8 @@ spec:
   values:
 """
 
-MANIFEST_WITHOUT_CHART_VERSION_PATTERN = """kind: HelmRelease
+MANIFEST_WITHOUT_CHART_VERSION_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -30,7 +32,8 @@ spec:
   values:
 """
 
-MANIFEST_WITH_SEMVER_PATTERN = """kind: HelmRelease
+MANIFEST_WITH_SEMVER_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -44,7 +47,8 @@ spec:
   values:
 """
 
-UPDATED_MANIFEST_WITH_SEMVER_PATTERN = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_SEMVER_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -58,7 +62,8 @@ spec:
   values:
 """
 
-MANIFEST_WITH_GLOB_PATTERN = """kind: HelmRelease
+MANIFEST_WITH_GLOB_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -72,7 +77,8 @@ spec:
   values:
 """
 
-UPDATED_MANIFEST_WITH_GLOB_PATTERN = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_GLOB_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -86,7 +92,8 @@ spec:
   values:
 """
 
-MANIFEST_WITH_REGEX_PATTERN = """kind: HelmRelease
+MANIFEST_WITH_REGEX_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -100,7 +107,8 @@ spec:
   values:
 """
 
-UPDATED_MANIFEST_WITH_REGEX_PATTERN = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_REGEX_PATTERN = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -150,7 +158,8 @@ entries:
     appVersion: v10.11.10
 """
 
-MANIFEST_WITH_SINGLE_IMAGE = """kind: HelmRelease
+MANIFEST_WITH_SINGLE_IMAGE = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -166,7 +175,8 @@ spec:
     image:
       tag: v0.0.1"""
 
-UPDATED_MANIFEST_WITH_SINGLE_IMAGE = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_SINGLE_IMAGE = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -183,7 +193,8 @@ spec:
       tag: v10.11.15
 """
 
-MANIFEST_WITH_MULTIPLE_IMAGES = """kind: HelmRelease
+MANIFEST_WITH_MULTIPLE_IMAGES = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -204,7 +215,8 @@ spec:
         tag: v0.0.1
 """
 
-UPDATED_MANIFEST_WITH_MULTIPLE_IMAGES = """kind: HelmRelease
+UPDATED_MANIFEST_WITH_MULTIPLE_IMAGES = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -225,7 +237,8 @@ spec:
         tag: v10.11.15
 """
 
-MANIFEST_WITH_MULTIPLE_DOCUMENTS = """kind: HelmRelease
+MANIFEST_WITH_MULTIPLE_DOCUMENTS = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
 metadata:
   name: hello-world
   namespace: default
@@ -252,6 +265,46 @@ spec:
 MANIFEST_EMPTY = """# HelmRelease
 #     rossum.ai/
 ---
+"""
+
+MANIFEST_WITH_FLUX2 = """apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: hello-world
+  namespace: default
+  annotations:
+    rossum.ai/chart-auto-update: "true"
+    rossum.ai/chart-version: glob:1.2.*
+spec:
+  chart:
+    spec:
+      chart: hello-world
+      version: 1.2.3
+      sourceRef:
+        kind: HelmRepository
+        name: test
+        namespace: flux-system
+  values:
+"""
+
+UPDATED_MANIFEST_WITH_FLUX2 = """apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: hello-world
+  namespace: default
+  annotations:
+    rossum.ai/chart-auto-update: "true"
+    rossum.ai/chart-version: glob:1.2.*
+spec:
+  chart:
+    spec:
+      chart: hello-world
+      version: 1.2.4
+      sourceRef:
+        kind: HelmRepository
+        name: test
+        namespace: flux-system
+  values:
 """
 
 
@@ -434,6 +487,17 @@ def test_does_not_crash_for_empty_annotation(empty_git_repo, requests_mock):
     assert _get_manifest("2-helmrelease.yaml") == UPDATED_MANIFEST_WITH_SINGLE_IMAGE
 
     assert re.search(SINGLE_IMAGE_RELEASE_COMMIT_RE, _last_commit())
+
+def test_chart_updated_flux2(empty_git_repo, requests_mock):
+    _add_manifest(MANIFEST_WITH_FLUX2)
+    _init_commit()
+    requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
+
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
+    updater.update_loop(one_shot=True)
+
+    assert _get_manifest() == UPDATED_MANIFEST_WITH_FLUX2
+    assert re.search(CHART_RELEASE_COMMIT_RE, _last_commit())
 
 
 def _add_manifest(content: str, path: str = MANIFEST_PATH) -> None:

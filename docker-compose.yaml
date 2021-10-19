@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    volumes:
+      - .:/app
+    #entrypoint: ["pytest"]
+    entrypoint: ["/bin/sleep", "infinity"]

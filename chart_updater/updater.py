@@ -1,3 +1,4 @@
+import subprocess
 import logging
 from threading import Event, Thread
 from time import sleep
@@ -82,7 +83,7 @@ class Updater:
             try:
                 self._ensure_git_repo_cloned()
                 self._one_update_iteration()
-            except Exception as e:
+            except (UpdateException, subprocess.TimeoutExpired) as e:
                 log.error(str(e))
 
             if one_shot:
