@@ -307,6 +307,18 @@ spec:
   values:
 """
 
+MANIFEST_NO_RELEVANT_ANNOTATIONS = """apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: hello-world
+  namespace: default
+  annotations:
+    rossum.ai/something: bar
+spec:
+  chart:
+    name: hello-world
+    version: 1.2.3
+"""
 
 INITIAL_COMMIT_RE = re.compile(r"Init")
 CHART_RELEASE_COMMIT_RE = re.compile(
@@ -499,6 +511,15 @@ def test_chart_updated_flux2(empty_git_repo, requests_mock):
     assert _get_manifest() == UPDATED_MANIFEST_WITH_FLUX2
     assert re.search(CHART_RELEASE_COMMIT_RE, _last_commit())
 
+def test_chart_no_relevant_annotations(empty_git_repo, requests_mock):
+    _add_manifest(MANIFEST_NO_RELEVANT_ANNOTATIONS)
+    _init_commit()
+    requests_mock.get(HELM_REPO_INDEX, text=CHART_REPO_INDEX_WITH_NEW_CHARTS)
+
+    updater = Updater(Git(empty_git_repo), HelmRepo(HELM_REPO_URL))
+    updater.update_loop(one_shot=True)
+
+    assert _get_manifest() == MANIFEST_NO_RELEVANT_ANNOTATIONS
 
 def _add_manifest(content: str, path: str = MANIFEST_PATH) -> None:
     with open(path, "w") as f:

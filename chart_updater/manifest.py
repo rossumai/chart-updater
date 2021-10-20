@@ -224,7 +224,7 @@ class Manifest:
     def _auto_updates_enabled(self, helmrelease):
         annotations = helmrelease.annotations
 
-        if not is_true_value(annotations[self._chart_auto_update_key]):
+        if not is_true_value(annotations.get(self._chart_auto_update_key)):
            return False
 
         if self._chart_version_pattern_key not in annotations:
