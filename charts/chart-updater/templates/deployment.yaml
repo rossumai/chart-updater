@@ -74,6 +74,9 @@ spec:
           - --git-ssh-identity=/root/ssh_keys/identity
           {{- end }}
           - --helm-repo-url={{ .Values.helm.url }}
+          {{- if .Values.helm.user }}
+          - --helm-repo-user={{ .Values.helm.user }}
+          {{- end }}
           - --sync-interval={{ .Values.git.pollInterval }}
           - --annotation-prefix={{ .Values.annotationPrefix }}
       volumes:
