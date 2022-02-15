@@ -7,6 +7,7 @@ import requests
 import semantic_version
 import yaml
 from requests import RequestException
+from requests.auth import HTTPBasicAuth
 
 from chart_updater import UpdateException
 
@@ -14,7 +15,9 @@ log = logging.getLogger("chart-updater")
 
 
 class HelmRepo:
-    def __init__(self, helm_repo_url: str):
+    def __init__(self, helm_repo_url: str, user=None, password=None):
+        self._user = user
+        self._password = password
         self.helm_repo_url = helm_repo_url
         self._index = None
 
@@ -29,7 +32,10 @@ class HelmRepo:
 
     def _load_chart_repo_index(self) -> dict:
         try:
-            response = requests.get(f"{self.helm_repo_url}/index.yaml")
+            if self._user:
+                response = requests.get(f"{self.helm_repo_url}/index.yaml", auth=HTTPBasicAuth(self._user, self._password))
+            else:
+                response = requests.get(f"{self.helm_repo_url}/index.yaml")
             response.raise_for_status()
         except RequestException as e:
             raise UpdateException(f"Cannot download chart list: {str(e)}")

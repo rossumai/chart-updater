@@ -50,6 +50,8 @@ env:
 helm:
   # URL of a Helm repository to watch, e.g. https://rossumai.github.io/helm-charts
   url: ""
+  user:
+  password:
 
 # Prefix used in helmrelease annotations related to chart-updater
 annotationPrefix: "rossum.ai"
