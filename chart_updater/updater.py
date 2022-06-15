@@ -1,5 +1,5 @@
-import subprocess
 import logging
+import subprocess
 from threading import Event, Thread
 from time import sleep
 from typing import Iterator, Optional

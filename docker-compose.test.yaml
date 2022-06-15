@@ -6,4 +6,5 @@ services:
       dockerfile: Dockerfile.tests
     volumes:
       - .:/app
-    entrypoint: ["/bin/sleep", "infinity"]
+    command: "pytest"
+    
