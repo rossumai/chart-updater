@@ -1,0 +1,9 @@
+[tool.pytest.ini_options]
+log_cli = true
+log_level = "INFO"
+
+[tool.coverage.html]
+show_contexts = true
+
+[tool.isort]
+known_third_party = ["click", "flask", "pytest", "requests", "ruamel", "semantic_version", "waitress", "yaml"]

@@ -1,0 +1,7 @@
+click
+flask
+pyyaml
+requests
+ruamel.yaml
+semantic_version
+waitress

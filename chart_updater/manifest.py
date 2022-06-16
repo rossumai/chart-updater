@@ -15,11 +15,14 @@ DEFAULT_CHART_IMAGE = "chart-image"
 
 log = logging.getLogger("chart-updater")
 
+
 class InvalidManifestError(Exception):
     pass
 
+
 def is_true_value(value: str) -> bool:
     return str(value).lower() == "true"
+
 
 class HelmRelease:
     @staticmethod
@@ -225,9 +228,9 @@ class Manifest:
         annotations = helmrelease.annotations
 
         if not is_true_value(annotations.get(self._chart_auto_update_key)):
-           return False
+            return False
 
         if self._chart_version_pattern_key not in annotations:
-           return False
+            return False
 
         return True

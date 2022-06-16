@@ -500,6 +500,7 @@ def test_does_not_crash_for_empty_annotation(empty_git_repo, requests_mock):
 
     assert re.search(SINGLE_IMAGE_RELEASE_COMMIT_RE, _last_commit())
 
+
 def test_chart_updated_flux2(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_WITH_FLUX2)
     _init_commit()
@@ -511,6 +512,7 @@ def test_chart_updated_flux2(empty_git_repo, requests_mock):
     assert _get_manifest() == UPDATED_MANIFEST_WITH_FLUX2
     assert re.search(CHART_RELEASE_COMMIT_RE, _last_commit())
 
+
 def test_chart_no_relevant_annotations(empty_git_repo, requests_mock):
     _add_manifest(MANIFEST_NO_RELEVANT_ANNOTATIONS)
     _init_commit()
@@ -520,6 +522,7 @@ def test_chart_no_relevant_annotations(empty_git_repo, requests_mock):
     updater.update_loop(one_shot=True)
 
     assert _get_manifest() == MANIFEST_NO_RELEVANT_ANNOTATIONS
+
 
 def _add_manifest(content: str, path: str = MANIFEST_PATH) -> None:
     with open(path, "w") as f:

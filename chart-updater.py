@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import logging
-import threading
 import os
+import threading
 
 import click
 from flask import Flask
@@ -57,7 +57,11 @@ def healthz():
 @click.option("--git-ssh-identity", help="Git config SSH identity file (key).")
 @click.option("--helm-repo-url", required=True, help="Helm repo URL.")
 @click.option("--helm-repo-user", help="Helm repo HTTP Auth user.")
-@click.option("--helm-repo-password", help="Helm repo HTTP Auth password.", default=lambda: os.environ.get("HELM_REPO_PASSWORD", ""))
+@click.option(
+    "--helm-repo-password",
+    help="Helm repo HTTP Auth password.",
+    default=lambda: os.environ.get("HELM_REPO_PASSWORD", ""),
+)
 @click.option(
     "--sync-interval",
     default=60,

@@ -2,7 +2,7 @@
 
 Chart-updater is a [Flux](https://github.com/fluxcd/flux) companion that allows
 for automatic [Helm](https://helm.sh) chart updates. It monitors Helm chart
-respository for new chart versions. If new version is found, related
+repository for new chart versions. If new version is found, related
 HelmRelease manifest is updated in the git config repository.
 
 This may be useful for deploying charts of your components, especially if the
@@ -22,7 +22,7 @@ updated atomically in a single commit.
 
 The tool is available as a Helm chart, ready to be deployed into your Kubernetes cluster.
 
-```
+```bash
 helm repo add rossumai https://rossumai.github.io/helm-charts
 helm install chart-updater rossumai/chart-updater
 ```
@@ -108,7 +108,7 @@ If you want to install and run chart-updater locally, follow these steps:
 
 Run `./chart-updater.py --help` to obtain list of available options:
 
-```
+```bash
 Usage: chart-updater.py [OPTIONS]
 
 Options:

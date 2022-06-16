@@ -33,7 +33,10 @@ class HelmRepo:
     def _load_chart_repo_index(self) -> dict:
         try:
             if self._user:
-                response = requests.get(f"{self.helm_repo_url}/index.yaml", auth=HTTPBasicAuth(self._user, self._password))
+                response = requests.get(
+                    f"{self.helm_repo_url}/index.yaml",
+                    auth=HTTPBasicAuth(self._user, self._password),
+                )
             else:
                 response = requests.get(f"{self.helm_repo_url}/index.yaml")
             response.raise_for_status()
