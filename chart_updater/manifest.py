@@ -38,9 +38,7 @@ class HelmRelease:
 
         api_version = manifest.get("apiVersion")
 
-        if api_version == "helm.fluxcd.io/v1":
-            return HelmReleaseV1(manifest)
-        elif api_version == "helm.toolkit.fluxcd.io/v2beta1":
+        if api_version == "helm.toolkit.fluxcd.io/v2beta1":
             return HelmReleaseV2(manifest)
         else:
             raise InvalidManifestError()
@@ -59,32 +57,6 @@ class HelmRelease:
     @property
     def values(self):
         return self.manifest.get("spec", {}).get("values", {})
-
-
-class HelmReleaseV1(HelmRelease):
-    def __init__(self, manifest):
-        if "chart" not in manifest["spec"]:
-            raise InvalidManifestError()
-
-        if "name" not in manifest["spec"]["chart"]:
-            raise InvalidManifestError()
-
-        if "version" not in manifest["spec"]["chart"]:
-            raise InvalidManifestError()
-
-        super().__init__(manifest)
-
-    @property
-    def chart_name(self):
-        return self.manifest["spec"]["chart"]["name"]
-
-    @property
-    def chart_version(self):
-        return self.manifest["spec"]["chart"]["version"]
-
-    @chart_version.setter
-    def chart_version(self, version):
-        self.manifest["spec"]["chart"]["version"] = version
 
 
 class HelmReleaseV2(HelmRelease):
