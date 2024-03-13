@@ -68,9 +68,7 @@ coverage[toml]==6.4.1 \
     --hash=sha256:fd180ed867e289964404051a958f7cccabdeed423f91a899829264bb7974d3d3 \
     --hash=sha256:fdb6f7bd51c2d1714cea40718f6149ad9be6a2ee7d93b19e9f00934c0f2a74d9 \
     --hash=sha256:ffa9297c3a453fba4717d06df579af42ab9a28022444cae7fa605af4df612d54
-    # via
-    #   coverage
-    #   pytest-cov
+    # via pytest-cov
 flask==2.1.2 \
     --hash=sha256:315ded2ddf8a6281567edb27393010fe3406188bafbfe65a3339d5787d89e477 \
     --hash=sha256:fad5b446feb0d6db6aec0c3184d16a8c1f6c3e464b511649c8918a9be100b4fe
@@ -291,9 +289,9 @@ tomli==2.0.1 \
     # via
     #   coverage
     #   pytest
-urllib3==1.26.9 \
-    --hash=sha256:44ece4d53fb1706f667c9bd1c648f5469a2ec925fcf3a776667042d645472c14 \
-    --hash=sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e
+urllib3==1.26.18 \
+    --hash=sha256:34b97092d7e0a3a8cf7cd10e386f401b3737364026c45e622aa02903dffe0f07 \
+    --hash=sha256:f8ecc1bba5667413457c529ab955bf8c67b45db799d159066261719e328580a0
     # via
     #   -r requirements.txt
     #   requests
