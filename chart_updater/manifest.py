@@ -38,7 +38,7 @@ class HelmRelease:
 
         api_version = manifest.get("apiVersion")
 
-        if api_version == "helm.toolkit.fluxcd.io/v2beta1":
+        if api_version.startswith("helm.toolkit.fluxcd.io/v2beta"):
             return HelmReleaseV2(manifest)
         else:
             raise InvalidManifestError()
