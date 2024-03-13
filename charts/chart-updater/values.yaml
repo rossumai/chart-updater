@@ -20,9 +20,9 @@ git:
   # Path within git repo to locate Kubernetes manifests (relative path)
   path: ""
   # Username to use as git committer
-  user: "Chart Sync"
+  user: "Chart Updater"
   # Email to use as git committer
-  email: "chart-sync@rossum.ai"
+  email: "chart-updater@rossum.cloud"
   # Period at which to poll git repo for new commits (seconds)
   pollInterval: "60"
   # The secret name can be used to supply your own SSH key:
