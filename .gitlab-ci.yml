@@ -1,0 +1,3 @@
+include:
+- project: common/gitlab-ci
+  file: /templates/gitlab-ci-simple.yaml
